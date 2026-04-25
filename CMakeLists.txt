@@ -1,5 +1,28 @@
 cmake_minimum_required(VERSION 3.16)
 
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(_snake2_vcpkg_toolchain "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+
+    if(EXISTS "${_snake2_vcpkg_toolchain}")
+        set(CMAKE_TOOLCHAIN_FILE "${_snake2_vcpkg_toolchain}" CACHE FILEPATH "vcpkg toolchain file")
+    elseif(WIN32)
+        set(_snake2_vswhere "$ENV{ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe")
+
+        if(EXISTS "${_snake2_vswhere}")
+            execute_process(
+                COMMAND "${_snake2_vswhere}" -latest -products * -property installationPath
+                OUTPUT_VARIABLE _snake2_vs_install_path
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+            )
+
+            set(_snake2_vcpkg_toolchain "${_snake2_vs_install_path}/VC/vcpkg/scripts/buildsystems/vcpkg.cmake")
+            if(EXISTS "${_snake2_vcpkg_toolchain}")
+                set(CMAKE_TOOLCHAIN_FILE "${_snake2_vcpkg_toolchain}" CACHE FILEPATH "vcpkg toolchain file")
+            endif()
+        endif()
+    endif()
+endif()
+
 project(Snake2 VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)

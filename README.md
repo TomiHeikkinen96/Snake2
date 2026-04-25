@@ -14,7 +14,7 @@ This project uses CMake and SDL2. The repository includes `vcpkg.json`, so Visua
 4. Configure the CMake project for x64.
 5. Build and run the `Snake2` target.
 
-If Visual Studio does not automatically find vcpkg, set `CMAKE_TOOLCHAIN_FILE` to your vcpkg toolchain file:
+On Windows, CMake will try to find vcpkg automatically from either `VCPKG_ROOT` or Visual Studio's bundled vcpkg installation. If it still cannot find SDL2, set `CMAKE_TOOLCHAIN_FILE` to your vcpkg toolchain file:
 
 ```text
 C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake

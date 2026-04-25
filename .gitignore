@@ -1,0 +1,9 @@
+.vs/
+build/
+build-vs/
+out/
+CMakeUserPresets.json
+*.user
+*.suo
+*.swp
+snake2_highscore.txt

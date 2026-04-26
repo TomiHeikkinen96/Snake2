@@ -8,3 +8,4 @@ CMakeUserPresets.json
 *.suo
 *.swp
 snake2_highscore.txt
+.vscode

@@ -29,8 +29,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(Snake2
-    src/main.cpp
+add_library(Snake2Core
     src/Core/SDLWrappers.cpp
     src/ECS/EntityManager.cpp
     src/ECS/SystemManager.cpp
@@ -41,23 +40,53 @@ add_executable(Snake2
     src/Resources/ResourceManager.cpp
 )
 
-target_include_directories(Snake2 PRIVATE include)
+target_include_directories(Snake2Core PUBLIC include)
 
 find_package(SDL2 CONFIG QUIET)
 
 if(TARGET SDL2::SDL2)
-    target_link_libraries(Snake2 PRIVATE SDL2::SDL2)
-    if(TARGET SDL2::SDL2main)
-        target_link_libraries(Snake2 PRIVATE SDL2::SDL2main)
-    endif()
+    target_link_libraries(Snake2Core PUBLIC SDL2::SDL2)
 else()
     find_package(SDL2 REQUIRED)
-    target_include_directories(Snake2 PRIVATE ${SDL2_INCLUDE_DIRS})
-    target_link_libraries(Snake2 PRIVATE ${SDL2_LIBRARIES})
+    target_include_directories(Snake2Core PUBLIC ${SDL2_INCLUDE_DIRS})
+    target_link_libraries(Snake2Core PUBLIC ${SDL2_LIBRARIES})
+endif()
+
+add_executable(Snake2 src/main.cpp)
+target_link_libraries(Snake2 PRIVATE Snake2Core)
+
+if(TARGET SDL2::SDL2main)
+    target_link_libraries(Snake2 PRIVATE SDL2::SDL2main)
 endif()
 
 if(MSVC)
+    target_compile_options(Snake2Core PRIVATE /W4 /permissive-)
     target_compile_options(Snake2 PRIVATE /W4 /permissive-)
 else()
+    target_compile_options(Snake2Core PRIVATE -Wall -Wextra -Wpedantic)
     target_compile_options(Snake2 PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+include(CTest)
+
+if(BUILD_TESTING)
+    find_package(GTest CONFIG REQUIRED)
+    include(GoogleTest)
+
+    add_executable(Snake2Tests
+        tests/Snake2LearningTests.cpp
+    )
+
+    target_link_libraries(Snake2Tests PRIVATE
+        Snake2Core
+        GTest::gtest_main
+    )
+
+    if(MSVC)
+        target_compile_options(Snake2Tests PRIVATE /W4 /permissive-)
+    else()
+        target_compile_options(Snake2Tests PRIVATE -Wall -Wextra -Wpedantic)
+    endif()
+
+    gtest_discover_tests(Snake2Tests)
 endif()

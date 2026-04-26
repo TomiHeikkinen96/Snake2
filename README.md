@@ -36,6 +36,22 @@ cmake -S . -B build
 cmake --build build --config Debug
 ```
 
+## Tests
+
+Snake2 uses GoogleTest through CTest. Visual Studio's CMake integration can discover these tests in **Test > Test Explorer** after the folder is configured.
+
+The test suite has two layers:
+
+- Characterization tests that document behavior the current proof-of-concept already has.
+- `LearningTodo_*` tests that intentionally fail while still compiling. Treat each one as a TDD ticket: pick one failing test, implement the production behavior, then replace the placeholder `FAIL()` with real assertions.
+
+From a Developer PowerShell:
+
+```powershell
+cmake --build build-vs --config Debug --target Snake2Tests
+ctest --test-dir build-vs -C Debug --output-on-failure
+```
+
 ## Controls
 
 - Arrow keys or WASD: move
